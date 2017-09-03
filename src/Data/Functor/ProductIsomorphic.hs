@@ -9,9 +9,12 @@
 --
 -- This is the integrated interface module for product restricted functors.
 module Data.Functor.ProductIsomorphic
-       ( module Data.Functor.ProductIsomorphic.Class
+       ( module Data.Functor.ProductIsomorphic.Unsafe
+       , module Data.Functor.ProductIsomorphic.Class
        , module Data.Functor.ProductIsomorphic.Instances
        ) where
 
+import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor)
 import Data.Functor.ProductIsomorphic.Class
 import Data.Functor.ProductIsomorphic.Instances
+import Data.Functor.ProductIsomorphic.TupleInstances ()

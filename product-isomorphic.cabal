@@ -19,10 +19,18 @@ library
   exposed-modules:
                      Data.Functor.ProductIsomorphic.Class
                      Data.Functor.ProductIsomorphic.Instances
+                     Data.Functor.ProductIsomorphic.TupleInstances
                      Data.Functor.ProductIsomorphic.Unsafe
                      Data.Functor.ProductIsomorphic
 
+                     Data.Functor.ProductIsomorphic.TH
+
+  other-modules:
+                     Data.Functor.ProductIsomorphic.TH.Internal
+
   build-depends:       base <5
+                     , template-haskell
+                     , th-data-compat
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall
