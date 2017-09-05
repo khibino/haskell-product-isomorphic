@@ -16,8 +16,12 @@ module Data.Functor.ProductIsomorphic.TupleInstances () where
 
 import Control.Applicative ((<$>))
 
+import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 import Data.Functor.ProductIsomorphic.TH.Internal
   (defineTupleProductConstructor)
 
+
+instance ProductConstructor () where
+  productConstructor = ()
 
 $(concat <$> mapM defineTupleProductConstructor [2..7])

@@ -39,7 +39,7 @@ instance Monoid a => ProductIsoApplicative (Const a) where
   {-# INLINABLE (|*|) #-}
 
 instance Monoid a => ProductIsoEmpty (Const a) () where
-  pureE = Const mempty
+  pureE = pureP ()
   {-# INLINABLE pureE #-}
   peRight (Const a) = Const a
   {-# INLINABLE peRight #-}
@@ -67,7 +67,7 @@ instance Alternative f => ProductIsoAlternative (WrappedFunctor f) where
   {-# INLINABLE (|||) #-}
 
 instance Applicative f => ProductIsoEmpty (WrappedFunctor f) () where
-  pureE   = WrapFunctor $ pure ()
+  pureE   = pureP ()
   {-# INLINABLE pureE #-}
   peRight = WrapFunctor . fmap fst . unwrapFunctor
   {-# INLINABLE peRight #-}
@@ -89,7 +89,7 @@ instance Alternative f => ProductIsoApplicative (WrappedAlter f a) where
   {-# INLINABLE (|*|) #-}
 
 instance Alternative f => ProductIsoEmpty (WrappedAlter f a) () where
-  pureE   = WrapAlter $ Const empty
+  pureE   = pureP ()
   {-# INLINABLE pureE #-}
   peRight = WrapAlter . fmap fst . unWrapAlter
   {-# INLINABLE peRight #-}
