@@ -19,9 +19,8 @@ module Data.Functor.ProductIsomorphic.Class (
   ProductIsoAlternative (..),
 
   -- * Empty element
-  pempty,
-  peRight, peRightR,
-  peLeft,  peLeftR,
+  ProductIsoEmpty (..),
+  peRightR, peLeftR,
 
   --- (<|), (|>),
   ) where
@@ -47,7 +46,7 @@ infixl 4 |$|, |*|
 infixl 3 |||
 
 -- | Empty element of product operator
-class ProductIsoApplicative f => ProductIsoZero f e where
+class ProductIsoApplicative f => ProductIsoEmpty f e where
   pempty  :: f e
   peRight :: f (a, e) -> f a
   peLeft  :: f (e, a) -> f a
@@ -56,7 +55,7 @@ class ProductIsoApplicative f => ProductIsoZero f e where
 -- @
 --   peRight . peRightR == peRightR . peRight == id
 -- @
-peRightR :: ProductIsoZero f e
+peRightR :: ProductIsoEmpty f e
         => f a
         -> f (a, e)
 peRightR p = (,) |$| p |*| pempty
@@ -66,19 +65,19 @@ peRightR p = (,) |$| p |*| pempty
 -- @
 --   peLeft . peLeftR == peLeftR . peLeft == id
 -- @
-peLeftR :: ProductIsoZero f e
+peLeftR :: ProductIsoEmpty f e
        => f a
        -> f (e, a)
 peLeftR p = (,) |$| pempty |*| p
 {-# INLINABLE peLeftR #-}
 
 {-
-(<|) :: ProductIsoZero f e => f a -> f e -> f a
-p <| z = peRight $ (,) |$| p |*| z
+(<|) :: ProductIsoEmpty f e => f a -> f e -> f a
+p <| e = peRight $ (,) |$| p |*| e
 {-# INLINABLE (<|) #-}
 
-(|>) :: ProductIsoZero f e => f e -> f a -> f a
-z |> p = peLeft $ (,) |$| z |*| p
+(|>) :: ProductIsoEmpty f e => f e -> f a -> f a
+e |> p = peLeft $ (,) |$| e |*| p
 {-# INLINABLE (|>) #-}
 
 infixl 4 <|, |>
