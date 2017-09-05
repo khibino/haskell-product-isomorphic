@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
 -- Module      : Data.Functor.ProductIsomorphic.Class
@@ -11,13 +12,22 @@
 --
 -- This module defines functor interfaces which morphed functions
 -- are restricted to products.
-module Data.Functor.ProductIsomorphic.Class
-       ( ProductIsoFunctor (..)
-       , ProductIsoApplicative (..)
-       , ProductIsoAlternative (..)
-       ) where
+module Data.Functor.ProductIsomorphic.Class (
+  -- * ProductIso classes
+  ProductIsoFunctor (..),
+  ProductIsoApplicative (..),
+  ProductIsoAlternative (..),
+
+  -- * Empty element
+  pempty,
+  peRight, peRightR,
+  peLeft,  peLeftR,
+
+  --- (<|), (|>),
+  ) where
 
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor)
+import Data.Functor.ProductIsomorphic.TupleInstances ()
 
 -- | Restricted functor on products.
 class ProductIsoFunctor f where
@@ -35,3 +45,41 @@ class ProductIsoApplicative f => ProductIsoAlternative f where
 
 infixl 4 |$|, |*|
 infixl 3 |||
+
+-- | Empty element of product operator
+class ProductIsoApplicative f => ProductIsoZero f e where
+  pempty  :: f e
+  peRight :: f (a, e) -> f a
+  peLeft  :: f (e, a) -> f a
+
+-- | peRight and peRightR should have isomorphic law.
+-- @
+--   peRight . peRightR == peRightR . peRight == id
+-- @
+peRightR :: ProductIsoZero f e
+        => f a
+        -> f (a, e)
+peRightR p = (,) |$| p |*| pempty
+{-# INLINABLE peRightR #-}
+
+-- | peLeft and peLeftR should have isomorphic law.
+-- @
+--   peLeft . peLeftR == peLeftR . peLeft == id
+-- @
+peLeftR :: ProductIsoZero f e
+       => f a
+       -> f (e, a)
+peLeftR p = (,) |$| pempty |*| p
+{-# INLINABLE peLeftR #-}
+
+{-
+(<|) :: ProductIsoZero f e => f a -> f e -> f a
+p <| z = peRight $ (,) |$| p |*| z
+{-# INLINABLE (<|) #-}
+
+(|>) :: ProductIsoZero f e => f e -> f a -> f a
+z |> p = peLeft $ (,) |$| z |*| p
+{-# INLINABLE (|>) #-}
+
+infixl 4 <|, |>
+ -}
