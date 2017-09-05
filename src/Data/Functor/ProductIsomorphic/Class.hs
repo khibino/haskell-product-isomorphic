@@ -47,7 +47,7 @@ infixl 3 |||
 
 -- | Empty element of product operator
 class ProductIsoApplicative f => ProductIsoEmpty f e where
-  pempty  :: f e
+  pureE   :: f e
   peRight :: f (a, e) -> f a
   peLeft  :: f (e, a) -> f a
 
@@ -58,7 +58,7 @@ class ProductIsoApplicative f => ProductIsoEmpty f e where
 peRightR :: ProductIsoEmpty f e
         => f a
         -> f (a, e)
-peRightR p = (,) |$| p |*| pempty
+peRightR p = (,) |$| p |*| pureE
 {-# INLINABLE peRightR #-}
 
 -- | peLeft and peLeftR should have isomorphic law.
@@ -68,7 +68,7 @@ peRightR p = (,) |$| p |*| pempty
 peLeftR :: ProductIsoEmpty f e
        => f a
        -> f (e, a)
-peLeftR p = (,) |$| pempty |*| p
+peLeftR p = (,) |$| pureE |*| p
 {-# INLINABLE peLeftR #-}
 
 {-
