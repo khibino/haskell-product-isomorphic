@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
 -- Module      : Data.Functor.ProductIsomorphic.Instances
@@ -23,7 +24,8 @@ import Control.Applicative
    Const (..))
 
 import Data.Functor.ProductIsomorphic.Class
-  (ProductIsoFunctor(..), ProductIsoApplicative (..), ProductIsoAlternative (..))
+  (ProductIsoFunctor(..), ProductIsoApplicative (..),
+   ProductIsoAlternative (..), ProductIsoEmpty (..))
 
 
 instance ProductIsoFunctor (Const a) where
@@ -35,6 +37,14 @@ instance Monoid a => ProductIsoApplicative (Const a) where
   {-# INLINABLE pureP #-}
   Const a |*| Const b = Const $ a <> b
   {-# INLINABLE (|*|) #-}
+
+instance Monoid a => ProductIsoEmpty (Const a) () where
+  pureE = Const mempty
+  {-# INLINABLE pureE #-}
+  peRight (Const a) = Const a
+  {-# INLINABLE peRight #-}
+  peLeft (Const a) = Const a
+  {-# INLINABLE peLeft #-}
 
 
 -- | Wrapped functor type to make instances of product-iso functors.
@@ -56,6 +66,14 @@ instance Alternative f => ProductIsoAlternative (WrappedFunctor f) where
   WrapFunctor fa1 ||| WrapFunctor fa2 = WrapFunctor $ fa1 <|> fa2
   {-# INLINABLE (|||) #-}
 
+instance Applicative f => ProductIsoEmpty (WrappedFunctor f) () where
+  pureE   = WrapFunctor $ pure ()
+  {-# INLINABLE pureE #-}
+  peRight = WrapFunctor . fmap fst . unwrapFunctor
+  {-# INLINABLE peRight #-}
+  peLeft  = WrapFunctor . fmap snd . unwrapFunctor
+  {-# INLINABLE peLeft #-}
+
 
 -- | Wrapped Const Alternative objects to make instances like Const functor.
 newtype WrappedAlter f a b = WrapAlter { unWrapAlter :: Const (f a) b }
@@ -69,3 +87,10 @@ instance Alternative f => ProductIsoApplicative (WrappedAlter f a) where
   {-# INLINABLE pureP #-}
   WrapAlter (Const a) |*| WrapAlter (Const b) = WrapAlter $ Const $ a <|> b
   {-# INLINABLE (|*|) #-}
+
+instance Alternative f => ProductIsoEmpty (WrappedAlter f a) () where
+  pureE   = WrapAlter $ Const empty
+  {-# INLINABLE pureE #-}
+  peRight = WrapAlter . fmap fst . unWrapAlter
+  {-# INLINABLE peRight #-}
+  peLeft  = WrapAlter . fmap snd . unWrapAlter
