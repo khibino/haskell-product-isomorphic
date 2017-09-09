@@ -26,6 +26,7 @@ library
                      Data.Functor.ProductIsomorphic.Class
                      Data.Functor.ProductIsomorphic.Instances
                      Data.Functor.ProductIsomorphic.TupleInstances
+                     Data.Functor.ProductIsomorphic.GenericInstances
                      Data.Functor.ProductIsomorphic.Unsafe
                      Data.Functor.ProductIsomorphic
 

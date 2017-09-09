@@ -18,3 +18,4 @@ import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor)
 import Data.Functor.ProductIsomorphic.Class
 import Data.Functor.ProductIsomorphic.Instances
 import Data.Functor.ProductIsomorphic.TupleInstances ()
+import Data.Functor.ProductIsomorphic.GenericInstances ()
