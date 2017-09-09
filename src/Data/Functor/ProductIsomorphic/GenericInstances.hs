@@ -25,15 +25,19 @@ import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 
 instance ProductConstructor (U1 p) where
   productConstructor = U1
+  {-# INLINEABLE productConstructor #-}
 
 instance ProductConstructor (c -> K1 i c p) where
   productConstructor = K1
+  {-# INLINEABLE productConstructor #-}
 
 instance ProductConstructor (f p -> M1 i c f p) where
   productConstructor = M1
+  {-# INLINEABLE productConstructor #-}
 
 instance ProductConstructor (f x -> g x -> (f :*: g) x) where
   productConstructor = (:*:)
+  {-# INLINEABLE productConstructor #-}
 
 {- -- why compile error?
 instance Generic a => ProductConstructor (a -> Rep a x) where
@@ -47,6 +51,8 @@ newtype WrappedRep a x = WrapRep { unWrapRep :: Rep a x }
 
 instance Generic a => ProductConstructor (a -> WrappedRep a x) where
   productConstructor = WrapRep . from
+  {-# INLINEABLE productConstructor #-}
 
 instance Generic a => ProductConstructor (WrappedRep a x -> a) where
   productConstructor = to . unWrapRep
+  {-# INLINEABLE productConstructor #-}
