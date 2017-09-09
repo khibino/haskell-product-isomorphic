@@ -12,10 +12,10 @@
 --
 -- This module defines functor instances morphed functions
 -- are restricted to products.
-module Data.Functor.ProductIsomorphic.Instances
-       ( WrappedFunctor (..)
-       , WrappedAlter (..)
-       ) where
+module Data.Functor.ProductIsomorphic.Instances (
+  WrappedFunctor (..),
+  WrappedAlter (..),
+  ) where
 
 import Data.Monoid (Monoid, mempty, (<>))
 import Control.Applicative

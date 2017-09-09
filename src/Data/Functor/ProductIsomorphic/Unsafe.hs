@@ -8,9 +8,9 @@
 -- Portability : unknown
 --
 -- This module defines unsafe class interfaces.
-module Data.Functor.ProductIsomorphic.Unsafe
-       ( ProductConstructor (..)
-       ) where
+module Data.Functor.ProductIsomorphic.Unsafe (
+  ProductConstructor (..),
+  ) where
 
 -- | Define product isomorphic inference rule
 --   to specify record constructor
