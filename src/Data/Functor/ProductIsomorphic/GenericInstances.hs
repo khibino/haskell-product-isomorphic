@@ -13,10 +13,12 @@
 --
 -- This module defines instances for constructors used in generic-programming.
 module Data.Functor.ProductIsomorphic.GenericInstances
-  () where
+  ( WrappedRep (..),
+  ) where
 
-import GHC.Generics (U1 (U1), K1 (K1), M1 (M1), (:*:) ((:*:)), )
--- import GHC.Generics (Generic, Rep)
+import GHC.Generics
+  (U1 (U1), K1 (K1), M1 (M1), (:*:) ((:*:)),
+   Generic, Rep, from, to, )
 
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 
@@ -40,3 +42,11 @@ instance Generic a => ProductConstructor (a -> Rep a x) where
 instance Generic a => ProductConstructor (Rep a x -> a) where
   productConstructor = to
  -}
+
+newtype WrappedRep a x = WrapRep { unWrapRep :: Rep a x }
+
+instance Generic a => ProductConstructor (a -> WrappedRep a x) where
+  productConstructor = WrapRep . from
+
+instance Generic a => ProductConstructor (WrappedRep a x -> a) where
+  productConstructor = to . unWrapRep
