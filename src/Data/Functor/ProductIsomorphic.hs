@@ -12,11 +12,10 @@ module Data.Functor.ProductIsomorphic (
   module Data.Functor.ProductIsomorphic.Unsafe,
   module Data.Functor.ProductIsomorphic.Class,
   module Data.Functor.ProductIsomorphic.Instances,
-  module Data.Functor.ProductIsomorphic.GenericInstances,
   ) where
 
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor)
 import Data.Functor.ProductIsomorphic.Class
 import Data.Functor.ProductIsomorphic.Instances
 import Data.Functor.ProductIsomorphic.TupleInstances ()
-import Data.Functor.ProductIsomorphic.GenericInstances (WrappedRep (..))
+import Data.Functor.ProductIsomorphic.GenericInstances ()
