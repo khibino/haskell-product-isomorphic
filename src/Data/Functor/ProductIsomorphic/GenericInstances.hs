@@ -16,6 +16,7 @@ module Data.Functor.ProductIsomorphic.GenericInstances
   () where
 
 import GHC.Generics (U1 (U1), K1 (K1), M1 (M1), (:*:) ((:*:)), )
+-- import GHC.Generics (Generic, Rep)
 
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 
@@ -31,3 +32,11 @@ instance ProductConstructor (f p -> M1 i c f p) where
 
 instance ProductConstructor (f x -> g x -> (f :*: g) x) where
   productConstructor = (:*:)
+
+{- -- why compile error?
+instance Generic a => ProductConstructor (a -> Rep a x) where
+  productConstructor = from
+
+instance Generic a => ProductConstructor (Rep a x -> a) where
+  productConstructor = to
+ -}
