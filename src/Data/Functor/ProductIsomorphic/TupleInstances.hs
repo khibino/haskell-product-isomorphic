@@ -12,8 +12,7 @@
 -- Portability : unknown
 --
 -- This module defines instances of tuple types.
-module Data.Functor.ProductIsomorphic.TupleInstances
-  () where
+module Data.Functor.ProductIsomorphic.TupleInstances () where
 
 import Control.Applicative ((<$>))
 
