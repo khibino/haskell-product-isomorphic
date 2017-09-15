@@ -27,22 +27,23 @@ import Data.List (foldl')
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 
 
-recordInfo' :: Info -> Maybe ((TypeQ, ExpQ), (Maybe [Name], [TypeQ]))
+recordInfo' :: Info -> Maybe (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
 recordInfo' =  d  where
   d (TyConI tcon) = do
     (_cxt, tcn, bs, _mk, [r], _ds) <- unDataD tcon
+    let vns = map getTV bs
     case r of
-      NormalC dcn ts   -> Just ((buildT tcn bs, conE dcn), (Nothing, [return t | (_, t) <- ts]))
-      RecC    dcn vts  -> Just ((buildT tcn bs, conE dcn), (Just ns, ts))
+      NormalC dcn ts   -> Just (((buildT tcn vns, vns), conE dcn), (Nothing, [return t | (_, t) <- ts]))
+      RecC    dcn vts  -> Just (((buildT tcn vns, vns), conE dcn), (Just ns, ts))
         where (ns, ts) = unzip [(n, return t) | (n, _, t) <- vts]
       _                -> Nothing
   d _                  =  Nothing
   getTV (PlainTV n)    =  n
   getTV (KindedTV n _) =  n
-  buildT tcn bs = foldl' appT (conT tcn) [ varT $ getTV b | b <- bs]
+  buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
 -- | Low-level reify interface for record type name.
-reifyRecordType :: Name -> Q ((TypeQ, ExpQ), (Maybe [Name], [TypeQ]))
+reifyRecordType :: Name -> Q (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
 reifyRecordType recTypeName =
   maybe
   (fail $ "Defined record type constructor not found: " ++ show recTypeName)
@@ -53,7 +54,7 @@ reifyRecordType recTypeName =
 defineProductConstructor :: Name     -- ^ name of product or record type constructor
                          -> Q [Dec]  -- ^ result template
 defineProductConstructor tyN = do
-  ((tyQ, dtQ), (_, colts))  <- reifyRecordType tyN
+  (((tyQ, _), dtQ), (_, colts))  <- reifyRecordType tyN
   [d| instance ProductConstructor $(foldr (appT . (arrowT `appT`)) tyQ colts) where
         productConstructor = $(dtQ)
     |]
