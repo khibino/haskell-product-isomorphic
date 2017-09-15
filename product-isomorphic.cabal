@@ -38,6 +38,8 @@ library
   build-depends:       base <5
                      , template-haskell
                      , th-data-compat
+  if impl(ghc == 7.4.*)
+    build-depends:        ghc-prim == 0.2.*
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall
