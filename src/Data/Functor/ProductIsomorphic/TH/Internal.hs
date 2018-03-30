@@ -17,11 +17,12 @@ module Data.Functor.ProductIsomorphic.TH.Internal (
   reifyRecordType,
   ) where
 
+import Control.Applicative ((<|>))
 import Language.Haskell.TH
   (Q, Name, tupleTypeName, Info (..), reify,
    TypeQ, arrowT, appT, conT, varT,
-   Dec, ExpQ, conE, Con (..), TyVarBndr (..), )
-import Language.Haskell.TH.Compat.Data (unDataD)
+   Dec, ExpQ, conE, Con (..), TyVarBndr (..), nameBase,)
+import Language.Haskell.TH.Compat.Data (unDataD, unNewtypeD)
 import Data.List (foldl')
 
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
@@ -30,7 +31,7 @@ import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 recordInfo' :: Info -> Maybe (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
 recordInfo' =  d  where
   d (TyConI tcon) = do
-    (_cxt, tcn, bs, _mk, [r], _ds) <- unDataD tcon
+    (tcn, bs, r) <- unDataDOrNewtypeD tcon
     let vns = map getTV bs
     case r of
       NormalC dcn ts   -> Just (((buildT tcn vns, vns), conE dcn), (Nothing, [return t | (_, t) <- ts]))
@@ -42,13 +43,32 @@ recordInfo' =  d  where
   getTV (KindedTV n _) =  n
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
+  unDataDOrNewtypeD tcon =
+    case unDataD tcon of
+      Just (_cxt, tcn, bs, _mk, [r], _ds) -> Just (tcn, bs, r)
+      Just _ -> Nothing
+      Nothing ->
+        case unNewtypeD tcon of
+          Just (_cxt, tcn, bs, _mk, r, _ds) -> Just (tcn, bs, r)
+          _ -> Nothing
+
 -- | Low-level reify interface for record type name.
 reifyRecordType :: Name -> Q (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
 reifyRecordType recTypeName =
   maybe
-  (fail $ "Defined record type constructor not found: " ++ show recTypeName)
+  (fail msgOnErr)
   return
   . recordInfo' =<< reify recTypeName
+  where
+    recTypeNameS = show recTypeName
+    recTypeNameB = nameBase recTypeName
+    msgOnErr =
+      "Valid record type constructor not found: " ++ recTypeNameS ++ ".\n"
+      ++ "    Possible causes:\n"
+      ++ "      - " ++ recTypeNameB ++ " is not a type name.\n"
+      ++ "        (Type name must be prefixed with double-single-quotes: e.g. ''" ++ recTypeNameB ++ ")\n"
+      ++ "      - " ++ recTypeNameB ++ " has multiple data constructors.\n"
+      ++ "        (Currently, only types with exactly *one* data constructors are supported)\n"
 
 -- | Make template of ProductConstructor instance from type constructor name.
 defineProductConstructor :: Name     -- ^ name of product or record type constructor
