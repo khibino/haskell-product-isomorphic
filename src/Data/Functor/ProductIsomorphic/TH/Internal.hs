@@ -44,13 +44,11 @@ recordInfo' =  d  where
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
   unDataDOrNewtypeD tcon =
-    case unDataD tcon of
-      Just (_cxt, tcn, bs, _mk, [r], _ds) -> Just (tcn, bs, r)
-      Just _ -> Nothing
-      Nothing ->
-        case unNewtypeD tcon of
-          Just (_cxt, tcn, bs, _mk, r, _ds) -> Just (tcn, bs, r)
-          _ -> Nothing
+    do (_cxt, tcn, bs, _mk, r, _ds)   <- unNewtypeD tcon
+       Just (tcn, bs, r)
+    <|>
+    do (_cxt, tcn, bs, _mk, [r], _ds) <- unDataD tcon
+       Just (tcn, bs, r)
 
 -- | Low-level reify interface for record type name.
 reifyRecordType :: Name -> Q (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
