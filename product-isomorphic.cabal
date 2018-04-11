@@ -45,6 +45,18 @@ library
   default-language:    Haskell2010
   ghc-options:         -Wall
 
+test-suite th
+  build-depends:         base <5
+                       , template-haskell
+                       , product-isomorphic
+
+  type:                exitcode-stdio-1.0
+  main-is:             doTH.hs
+
+  hs-source-dirs:      test
+  ghc-options:         -Wall
+
+  default-language:     Haskell2010
 
 source-repository head
   type:       git
