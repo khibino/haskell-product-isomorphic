@@ -31,7 +31,12 @@ import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
 recordInfo' :: Info -> Maybe (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
 recordInfo' =  d  where
   d (TyConI tcon) = do
-    (tcn, bs, r) <- unDataDOrNewtypeD tcon
+    (tcn, bs, r)  <-
+      do (_cxt, tcn, bs, _mk, [r], _ds)  <-  unDataD tcon
+         Just (tcn, bs, r)
+      <|>
+      do (_cxt, tcn, bs, _mk,  r , _ds)  <-  unNewtypeD tcon
+         Just (tcn, bs, r)
     let vns = map getTV bs
     case r of
       NormalC dcn ts   -> Just (((buildT tcn vns, vns), conE dcn), (Nothing, [return t | (_, t) <- ts]))
@@ -42,13 +47,6 @@ recordInfo' =  d  where
   getTV (PlainTV n)    =  n
   getTV (KindedTV n _) =  n
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
-
-  unDataDOrNewtypeD tcon =
-    do (_cxt, tcn, bs, _mk, [r], _ds) <- unDataD tcon
-       Just (tcn, bs, r)
-    <|>
-    do (_cxt, tcn, bs, _mk, r, _ds)   <- unNewtypeD tcon
-       Just (tcn, bs, r)
 
 -- | Low-level reify interface for record type name.
 reifyRecordType :: Name -> Q (((TypeQ, [Name]), ExpQ), (Maybe [Name], [TypeQ]))
