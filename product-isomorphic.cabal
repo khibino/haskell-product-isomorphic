@@ -36,7 +36,7 @@ library
   other-modules:
                      Data.Functor.ProductIsomorphic.TH.Internal
 
-  build-depends:       base <5
+  build-depends:       base >=4.5 && <5
                      , template-haskell
                      , th-data-compat
   if impl(ghc == 7.4.*)
