@@ -44,10 +44,10 @@ recordInfo' =  d  where
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
   unDataDOrNewtypeD tcon =
-    do (_cxt, tcn, bs, _mk, r, _ds)   <- unNewtypeD tcon
+    do (_cxt, tcn, bs, _mk, [r], _ds) <- unDataD tcon
        Just (tcn, bs, r)
     <|>
-    do (_cxt, tcn, bs, _mk, [r], _ds) <- unDataD tcon
+    do (_cxt, tcn, bs, _mk, r, _ds)   <- unNewtypeD tcon
        Just (tcn, bs, r)
 
 -- | Low-level reify interface for record type name.
