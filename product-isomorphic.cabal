@@ -1,5 +1,5 @@
 name:                product-isomorphic
-version:             0.0.3.2
+version:             0.0.3.3
 synopsis:            Weaken applicative functor on products
 description:         Weaken applicative functor which allows only product
                      construction. Product constructions and deconstructions
