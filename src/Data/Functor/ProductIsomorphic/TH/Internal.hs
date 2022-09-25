@@ -47,10 +47,11 @@ recordInfo' =  d  where
   d _                  =  Nothing
 #if MIN_VERSION_base(4,15,0)
   getTV (PlainTV n _)    =  n
+  getTV (KindedTV n _) =  n
 #else
   getTV (PlainTV n)    =  n
+  getTV (KindedTV n _ _) =  n
 #endif
-  getTV (KindedTV n _) =  n
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
 -- | Low-level reify interface for record type name.
