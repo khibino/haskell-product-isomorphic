@@ -1,5 +1,6 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE CPP #-}
 
 -- |
 -- Module      : Data.Functor.ProductIsomorphic.TH.Internal
@@ -44,7 +45,11 @@ recordInfo' =  d  where
         where (ns, ts) = unzip [(n, return t) | (n, _, t) <- vts]
       _                -> Nothing
   d _                  =  Nothing
+#if MIN_VERSION_base(4,15,0)
+  getTV (PlainTV n _)    =  n
+#else
   getTV (PlainTV n)    =  n
+#endif
   getTV (KindedTV n _) =  n
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
