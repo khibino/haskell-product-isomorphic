@@ -42,6 +42,7 @@ library
   build-depends:       base >=4.5 && <5
                      , template-haskell
                      , th-data-compat
+                     , th-abstraction
   if impl(ghc == 7.4.*)
     build-depends:        ghc-prim == 0.2.*
   hs-source-dirs:      src

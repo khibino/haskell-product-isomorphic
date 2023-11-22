@@ -23,6 +23,7 @@ import Language.Haskell.TH
    TypeQ, arrowT, appT, conT, varT,
    Dec, ExpQ, conE, Con (..), TyVarBndr (..), nameBase,)
 import Language.Haskell.TH.Compat.Data (unDataD, unNewtypeD)
+import Language.Haskell.TH.Datatype.TyVarBndr (tvName)
 import Data.List (foldl')
 
 import Data.Functor.ProductIsomorphic.Unsafe (ProductConstructor (..))
@@ -37,15 +38,13 @@ recordInfo' =  d  where
       <|>
       do (_cxt, tcn, bs, _mk,  r , _ds)  <-  unNewtypeD tcon
          Just (tcn, bs, r)
-    let vns = map getTV bs
+    let vns = map tvName bs
     case r of
       NormalC dcn ts   -> Just (((buildT tcn vns, vns), conE dcn), (Nothing, [return t | (_, t) <- ts]))
       RecC    dcn vts  -> Just (((buildT tcn vns, vns), conE dcn), (Just ns, ts))
         where (ns, ts) = unzip [(n, return t) | (n, _, t) <- vts]
       _                -> Nothing
   d _                  =  Nothing
-  getTV (PlainTV n)    =  n
-  getTV (KindedTV n _) =  n
   buildT tcn vns = foldl' appT (conT tcn) [ varT vn | vn <- vns ]
 
 -- | Low-level reify interface for record type name.
